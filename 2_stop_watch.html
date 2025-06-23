@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stopwatch Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .stopwatch {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    #display {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00796b;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stopwatch">
+    <div id="display">00:00:00</div>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <button onclick="reset()">Reset</button>
+  </div>
+
+  <script>
+    let timer;
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+    let running = false;
+
+    function updateDisplay() {
+      let h = hours < 10 ? "0" + hours : hours;
+      let m = minutes < 10 ? "0" + minutes : minutes;
+      let s = seconds < 10 ? "0" + seconds : seconds;
+      document.getElementById("display").innerText = `${h}:${m}:${s}`;
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      timer = setInterval(() => {
+        seconds++;
+        if (seconds === 60) {
+          seconds = 0;
+          minutes++;
+        }
+        if (minutes === 60) {
+          minutes = 0;
+          hours++;
+        }
+        updateDisplay();
+      }, 1000);
+    }
+
+    function stop() {
+      running = false;
+      clearInterval(timer);
+    }
+
+    function reset() {
+      running = false;
+      clearInterval(timer);
+      seconds = 0;
+      minutes = 0;
+      hours = 0;
+      updateDisplay();
+    }
+  </script>
+
+</body>
+</html>

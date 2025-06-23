@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alarm Clock</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    .alarm-container {
+      background: #333;
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+
+    #clock {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="alarm-container">
+    <div id="clock">--:--:--</div>
+
+    <select id="hour"></select>
+    <select id="minute"></select>
+    <select id="ampm">
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select><br>
+
+    <button onclick="setAlarm()">Set Alarm</button>
+    <p id="status"></p>
+  </div>
+
+  <audio id="alarmSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+  <script>
+    const clock = document.getElementById("clock");
+    const hourSelect = document.getElementById("hour");
+    const minuteSelect = document.getElementById("minute");
+    const ampmSelect = document.getElementById("ampm");
+    const alarmSound = document.getElementById("alarmSound");
+    const status = document.getElementById("status");
+
+    let alarmTime = null;
+
+    // Populate hour and minute dropdowns
+    for (let i = 1; i <= 12; i++) {
+      let option = document.createElement("option");
+      option.value = i;
+      option.textContent = i;
+      hourSelect.appendChild(option);
+    }
+
+    for (let i = 0; i < 60; i++) {
+      let option = document.createElement("option");
+      option.value = i < 10 ? "0" + i : i;
+      option.textContent = i < 10 ? "0" + i : i;
+      minuteSelect.appendChild(option);
+    }
+
+    // Update clock every second
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const ampm = hours >= 12 ? "PM" : "AM";
+
+      hours = hours % 12;
+      hours = hours ? hours : 12; // '0' should be '12'
+
+      const timeString = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${ampm}`;
+      clock.textContent = timeString;
+
+      if (alarmTime === `${hours}:${minutes < 10 ? "0" + minutes : minutes} ${ampm}`) {
+        alarmSound.play();
+        status.textContent = "⏰ Alarm Ringing!";
+      }
+    }
+
+    function setAlarm() {
+      const hour = hourSelect.value;
+      const minute = minuteSelect.value;
+      const ampm = ampmSelect.value;
+
+      alarmTime = `${hour}:${minute} ${ampm}`;
+      status.textContent = `Alarm set for ${alarmTime}`;
+    }
+
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

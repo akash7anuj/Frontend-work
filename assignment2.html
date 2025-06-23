@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+</head>
+<body>
+    <center><h1>📅 Book an Appointment 🏥</h1></center>
+    
+    <form action="#" method="post">
+        <fieldset>
+            <legend><b>👤 Patient Information</b></legend>
+            <label for="name"><b>Full Name:</b></label>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="email"><b>Email:</b></label>
+            <input type="email" id="email" name="email" required><br><br>
+
+            <label for="phone"><b>Phone Number:</b></label>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}"><br><br>
+        </fieldset>
+
+        <fieldset>
+            <legend><b>🩺 Appointment Details</b></legend>
+            <label for="doctor"><b>Choose a Doctor:</b></label>
+            <select id="doctor" name="doctor">
+                <option value="Dr. John Smith">Dr. Rohan Singh</option>
+                <option value="Dr. Alice White">Dr. Pradeep Sharma</option>
+                <option value="Dr. Robert Brown">Dr. Ankit Pandey</option>
+            </select><br><br>
+
+            <label for="appt-type"><b>Appointment Type:</b></label>
+            <select id="appt-type" name="appt-type">
+                <option value="General Checkup">General Checkup</option>
+                <option value="Follow-up">Follow-up</option>
+                <option value="Specialist Consultation">Specialist Consultation</option>
+            </select><br><br>
+
+            <label for="date"><b>Select Date:</b></label>
+            <input type="date" id="date" name="date" required><br><br>
+
+            <label for="time"><b>Select Time:</b></label>
+            <input type="time" id="time" name="time" required><br><br>
+        </fieldset>
+
+        <fieldset>
+            <legend><b>📝 Medical Information</b></legend>
+            <label for="medical-info"><b>Describe Your Symptoms:</b></label>
+            <textarea id="medical-info" name="medical-info" rows="4" cols="50" placeholder="Enter details..."></textarea><br><br>
+        </fieldset>
+
+        <fieldset>
+            <legend><b>🌍 Preferred Language</b></legend>
+            <label><input type="radio" name="language" value="English" required> English</label>
+            <label><input type="radio" name="language" value="Spanish">Hindi</label>
+            <label><input type="radio" name="language" value="French">French</label>
+        </fieldset><br>
+
+        <center><button type="submit">✅ Submit</button></center>
+    </form>
+
+    <center><h2>📋 Appointment Summary</h2></center>
+    <table border="1" width="100%">
+        <tr>
+            <th>👤 Patient's Name</th>
+            <th>👨‍⚕️ Doctor</th>
+            <th>📝 Appointment Type</th>
+            <th>📅 Date</th>
+            <th>⏰ Time</th>
+            <th>⚕️ Symptoms</th>
+        </tr>
+        
+    </table>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Alarm Clock Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /> 
+  <style>
+    body {
+      min-height: 100vh;
+      background: var(--bs-body-bg);
+      color: var(--bs-body-color);
+      transition: background-color 0.5s, color 0.5s;
+    }
+    .clock-display {
+      font-family: 'Courier New', monospace;
+      font-size: 3rem;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column align-items-center py-4">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary w-100 mb-4">
+    <div class="container text-center align-items-center">
+      <a class="navbar-brand mx-auto" href="#"><i class="bi bi-alarm"></i> AlarmDash</a>
+    </div>
+  </nav>
+
+  <div class="card shadow-sm w-100" style="max-width: 480px;">
+    <div class="card-body text-center">
+      <div id="clock" class="clock-display mb-3">--:--:--</div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-4">
+          <select id="hour" class="form-select"></select>
+        </div>
+        <div class="col-4">
+          <select id="minute" class="form-select"></select>
+        </div>
+        <div class="col-4">
+          <select id="ampm" class="form-select">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 mb-3">
+        <button class="btn btn-success" onclick="setAlarm()">
+          <i class="bi bi-plus-circle"></i> Set Alarm
+        </button>
+        <button class="btn btn-danger" onclick="stopAlarm()">
+          <i class="bi bi-stop-circle"></i> Stop Alarm
+        </button>
+        <button class="btn btn-warning text-white" onclick="snoozeAlarm()">
+          <i class="bi bi-snooze"></i> Snooze 5 min
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-center mb-3">
+        <button class="btn btn-outline-secondary mx-1" onclick="toggleFormat()">
+          <i class="bi bi-clock-history"></i> Toggle 12/24h
+        </button>
+        <button class="btn btn-outline-secondary mx-1" onclick="toggleMode()">
+          <i class="bi bi-brightness-high"></i> Toggle Light/Dark
+        </button>
+      </div>
+
+      <div id="status" class="alert alert-info py-2 d-none"></div>
+
+      <div class="alarm-list mt-3 text-start">
+        <h6>⏰ Set Alarms:</h6>
+        <ul id="alarmList" class="list-group"></ul>
+      </div>
+    </div>
+  </div>
+
+  <audio id="alarmSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YYYY"
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+    const clock = document.getElementById("clock");
+    const hourSelect = document.getElementById("hour");
+    const minuteSelect = document.getElementById("minute");
+    const ampmSelect = document.getElementById("ampm");
+    const alarmSound = document.getElementById("alarmSound");
+    const statusDiv = document.getElementById("status");
+    const alarmList = document.getElementById("alarmList");
+
+    let alarms = [];
+    let ringingAlarm = null;
+    let is24Hour = false;
+
+    // Populate selects
+    for (let i = 1; i <= 12; i++) {
+      const opt = new Option(i, i);
+      hourSelect.add(opt);
+    }
+    for (let i = 0; i < 60; i++) {
+      const val = i.toString().padStart(2, "0");
+      const opt = new Option(val, val);
+      minuteSelect.add(opt);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+      const ampm = h >= 12 ? "PM" : "AM";
+
+      let dispH = is24Hour ? h : (h % 12 || 12);
+      const timeStr = `${dispH.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}` 
+                    + (is24Hour ? "" : ` ${ampm}`);
+      clock.textContent = timeStr;
+
+      const checkTime = `${(h % 12 || 12)}:${m.toString().padStart(2,'0')} ${ampm}`;
+      if (alarms.includes(checkTime) && !ringingAlarm) {
+        alarmSound.play();
+        showStatus(`⏰ Ringing: ${checkTime}`, 'warning');
+        ringingAlarm = checkTime;
+      }
+    }
+
+    function setAlarm() {
+      const newAl = `${hourSelect.value}:${minuteSelect.value} ${ampmSelect.value}`;
+      if (!alarms.includes(newAl)) {
+        alarms.push(newAl);
+        renderAlarms();
+        showStatus(`✅ Alarm set for ${newAl}`, 'success');
+      } else {
+        showStatus(`⚠️ Already set for ${newAl}`, 'danger');
+      }
+    }
+
+    function stopAlarm() {
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+      if (ringingAlarm) {
+        alarms = alarms.filter(a => a !== ringingAlarm);
+        renderAlarms();
+        showStatus(`🛑 Stopped & cleared ${ringingAlarm}`, 'info');
+        ringingAlarm = null;
+      } else {
+        showStatus(`ℹ️ No alarm ringing`, 'secondary');
+      }
+    }
+
+    function snoozeAlarm() {
+      if (!ringingAlarm) return showStatus("❌ Nothing to snooze", 'danger');
+      let [time, ap] = ringingAlarm.split(' ');
+      let [H, M] = time.split(':').map(Number);
+      M += 5;
+      if (M >= 60) { M -= 60; H = H === 12 ? 1 : H + 1; }
+      const snoozed = `${H}:${M.toString().padStart(2,'0')} ${ap}`;
+      alarms.push(snoozed);
+      renderAlarms();
+      stopAlarm();
+      showStatus(`😴 Snoozed until ${snoozed}`, 'primary');
+    }
+
+    function renderAlarms() {
+      alarmList.innerHTML = '';
+      alarms.forEach((a, i) => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.textContent = a;
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-outline-danger';
+        btn.innerHTML = '<i class="bi bi-trash"></i>';
+        btn.onclick = () => { alarms.splice(i,1); renderAlarms(); showStatus('🗑️ Removed', 'secondary'); };
+        li.appendChild(btn);
+        alarmList.appendChild(li);
+      });
+    }
+
+    function toggleFormat() {
+      is24Hour = !is24Hour;
+      showStatus(`🕒 ${is24Hour ? '24-hour' : '12-hour'} mode`, 'info');
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle('bg-dark');
+      document.body.classList.toggle('text-light');
+      document.body.classList.toggle('bg-light');
+      document.body.classList.toggle('text-dark');
+    }
+
+    function showStatus(msg, type) {
+      statusDiv.textContent = msg;
+      statusDiv.className = `alert alert-${type} py-2`;
+      statusDiv.classList.remove('d-none');
+      setTimeout(() => statusDiv.classList.add('d-none'), 4000);
+    }
+
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

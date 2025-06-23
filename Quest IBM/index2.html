@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood-Based Quotes Generator</title>
+    <link rel="stylesheet" href="./style.css">
+    <script defer src="script.js"></script>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> -->
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="container">
+        <h1>🌟 Mood-Based Quotes Generator</h1>
+
+        <div class="mood-selector">
+            <label for="moodSelect">Choose Your Mood:</label>
+            <select id="moodSelect">
+                <option value="happy">😊 Happy</option>
+                <option value="sad">😢 Sad</option>
+                <option value="serious">😐 Serious</option>
+                <option value="motivation">🔥 Motivation</option>
+            </select>
+        </div>
+
+        <button onclick="generateQuote()">
+            <i class="fas fa-magic"></i> Get Inspired
+        </button>
+
+        <p id="quote">✨ Select a mood and click the button to get a quote!</p>
+
+        <div class="image-container">
+            <img id="img1" src="images/default.jpg" alt="Mood Image 1">
+            <img id="img2" src="images/default.jpg" alt="Mood Image 2">
+            <img id="img3" src="images/default.jpg" alt="Mood Image 3">
+        </div>
+
+        <div class="social-share">
+            <button onclick="shareQuote()"><i class="fas fa-share-alt"></i> Share</button>
+        </div>
+
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider round"></span>
+            </label>
+            <p>Dark Mode</p>
+        </div>
+    </div>
+
+</body>
+</html>
